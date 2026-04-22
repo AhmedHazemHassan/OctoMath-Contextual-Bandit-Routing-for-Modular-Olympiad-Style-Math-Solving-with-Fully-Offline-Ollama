@@ -70,7 +70,7 @@ OctoMath has been tested in different Kaggle hardware modes (e.g., GPU-backed se
 5. Export final predictions to:
    - `submission.parquet`
 
-A cleaned reproducibility notebook is planned to make these steps deterministic and audit-friendly. An optional Colab variant may be provided for demonstration where policy constraints permit.
+A cleaned reproducibility notebook is planned to make these steps deterministic and audit-friendly. An optional Colab variant may be provided for demonstration if platform rules allow it.
 
 ## Evaluation
 
