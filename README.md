@@ -54,7 +54,7 @@ Model reference used in this project:
 
 ### Hardware Variability (Conservative Note)
 
-OctoMath has been exercised in different Kaggle hardware modes (e.g., GPU-backed sessions such as H100 and CPU-only sessions). Behavior and runtime naturally vary by hardware availability. This repository does **not** over-interpret hardware-specific logs as official competition scoring evidence.
+OctoMath has been tested in different Kaggle hardware modes (e.g., GPU-backed sessions such as H100 and CPU-only sessions). Behavior and runtime naturally vary by hardware availability, and hardware-specific runtime observations should **not** be interpreted as official competition score validation.
 
 ## Reproducibility
 
@@ -74,12 +74,12 @@ A cleaned reproducibility notebook is planned to make these steps deterministic 
 
 ## Evaluation
 
-- **OctoMath-95** is a synthetic dataset used as a regression/sanity evaluation set and is hosted on Kaggle.
-- Quantitative leaderboard-style result tables are intentionally deferred; consolidated numbers and ablations are planned for a later update/rebuttal phase.
+- **OctoMath-95** is a synthetic dataset used for regression testing and sanity-check evaluation, hosted on Kaggle (link placeholder in the **Links** section).
+- Quantitative leaderboard-style result tables are intentionally deferred; consolidated numbers and ablations are planned for a later update during the competition rebuttal phase.
 
 ## Licensing and Third-Party Notices
 
-- Repository code license: **MIT** (see `LICENSE`; placeholder applies to this codebase).
+- Repository code license: **MIT** (see `LICENSE`).
 - Packaged datasets/assets may include third-party components distributed under their original notices (including **MIT** and **Apache-2.0** where applicable). Please review dataset-specific notices before redistribution.
 
 ## Links (Placeholders)
