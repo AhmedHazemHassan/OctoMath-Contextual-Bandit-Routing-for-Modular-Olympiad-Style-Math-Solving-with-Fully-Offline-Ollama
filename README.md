@@ -1,95 +1,97 @@
-# OctoMath: Contextual Bandit Routing for Modular Olympiad-Style Math Solving with Fully Offline Ollama Inference (CPU/GPU-capable)
+# OctoMath — Contextual Bandit Routing for Modular Olympiad-Style Math Solving (Fully Offline Ollama, CPU/GPU-capable)
 
-OctoMath is a modular math-solving system built for **AIMO 3 (AI Mathematical Olympiad)** style problems. It combines deterministic symbolic routines with LLM-based reasoning and uses a contextual bandit router to decide which solver arm to call per problem under strict runtime and offline constraints.
+OctoMath is a modular math-solving system built for **AIMO 3 (AI Mathematical Olympiad – Progress Prize 3)**-style problems. It routes each problem to one of several solver “arms” using a **contextual multi-armed bandit (LinUCB)**, combining deterministic math modules with **LLM-assisted** reasoning and **LLM→SymPy code execution** under strict **offline** constraints.
 
-The project focus is practical deployment: run end-to-end in a Kaggle offline environment, package Ollama inference assets locally, and keep experiments reproducible.
-
-## Contribution Summary
-
-- **LinUCB routing:** A contextual bandit (LinUCB-style) policy that routes each item to solver arms based on lightweight features and online reward signals.
-- **Hybrid solver arms:** Multiple specialized arms (deterministic + LLM-assisted) for different math regimes instead of a single monolithic prompt path.
-- **Offline Ollama packaging:** Local model/runtime packaging for no-internet execution (including model blobs/manifests and Ollama runners/runtime assets).
-- **Reproducibility assets:** Packaged datasets/notebooks and fixed execution steps intended for repeatable offline runs.
-
-## High-Level Architecture
-
-At a high level, OctoMath follows this flow:
-
-1. **Input normalization & feature extraction**  
-   Parse problem text and derive routing features.
-2. **Contextual bandit router (LinUCB)**  
-   Select the solver arm with the best expected utility under compute/time constraints.
-3. **Solver arm execution**  
-   Execute one of several modular arms, then standardize outputs.
-4. **Aggregation/post-processing**  
-   Normalize final numeric/string format and prepare submission records.
-
-### Solver Arms (Overview)
-
-- **Deterministic algebra/number-theory style routines** (e.g., CRT-style and formula-driven paths when applicable).
-- **Geometry/structured symbolic paths** for pattern-specific problem families.
-- **DP/combinatorial routines** for finite-state/counting style prompts.
-- **LLM-assisted arm(s)** via offline Ollama for problems that benefit from broader reasoning/search.
-
-> Exact module boundaries may evolve as cleanup/reproducibility notebooks are finalized.
-
-## Offline Ollama Packaging Notes
-
-To support fully offline inference, OctoMath uses three components together:
-
-1. **Model data:** `blobs/` + `manifests/` (Ollama model store layout)
-2. **Ollama runtime:** `ollama` executable and supporting runtime files
-3. **Runners:** CPU/CUDA runner libraries used by Ollama at serving time
-
-Required environment variables in offline runtime setup:
-
-- `OLLAMA_RUNNERS_DIR` — path to packaged runners
-- `OLLAMA_MODELS` — path to local model store containing blobs/manifests
-- `LD_LIBRARY_PATH` — include runner/runtime CUDA-related library paths as needed
-
-Model reference used in this project:
-
-- **Tag:** `erwan2/DeepSeek-R1-Distill-Qwen-7B:latest`
-- **ID:** `f1a7a890c7a1`
-
-### Hardware Variability (Conservative Note)
-
-OctoMath has been tested in different Kaggle hardware modes (e.g., GPU-backed sessions such as H100 and CPU-only sessions). Behavior and runtime naturally vary by hardware availability, and hardware-specific runtime observations should **not** be interpreted as official competition score validation.
-
-## Reproducibility
-
-### Kaggle Offline Reproduction (Planned Canonical Path)
-
-1. Attach required Kaggle datasets (Ollama runtime/model assets, embeddings/features, and evaluation assets).
-2. Set environment variables (`OLLAMA_RUNNERS_DIR`, `OLLAMA_MODELS`, `LD_LIBRARY_PATH`).
-3. Start local server:
-   ```bash
-   ollama serve
-   ```
-4. Run the OctoMath pipeline notebook/script.
-5. Export final predictions to:
-   - `submission.parquet`
-
-A cleaned reproducibility notebook is planned to make these steps deterministic and audit-friendly. An optional Colab variant may be provided for demonstration if platform rules allow it.
-
-## Evaluation
-
-- **OctoMath-95** is a synthetic dataset used for regression testing and sanity-check evaluation, hosted on Kaggle (link placeholder in the **Links** section).
-- Quantitative leaderboard-style result tables are intentionally deferred; consolidated numbers and ablations are planned for a later update during the competition rebuttal phase.
-
-## Licensing and Third-Party Notices
-
-- Repository code license: **MIT** (see `LICENSE`).
-- Packaged datasets/assets may include third-party components distributed under their original notices (including **MIT** and **Apache-2.0** where applicable). Please review dataset-specific notices before redistribution.
-
-## Links (Placeholders)
-
-- Kaggle submission notebook: **[TBD]**
-- Kaggle dataset — Ollama utils/runtime assets: **[TBD]**
-- Kaggle dataset — embeddings/features: **[TBD]**
-- Kaggle dataset — OctoMath-95: **[TBD]**
-- Write-up / technical report: **[TBD]**
+This repository is a lightweight project page and documentation entrypoint. The canonical reproduction artifacts are the **public Kaggle notebook and datasets** linked below.
 
 ---
 
-If you are a reviewer reproducing runs, please prioritize the upcoming clean reproducibility notebook instructions once published.
+## Highlights
+
+- **Contextual bandit routing (LinUCB):** chooses an appropriate solver arm based on cheap features (regex + MiniLM embeddings).
+- **Hybrid solver arms:** deterministic number theory / combinatorics / DP / geometry heuristics + LLM direct reasoning + LLM→SymPy codegen+execution.
+- **Verification-first design:** strict integer extraction and SymPy-based checks where applicable.
+- **Fully offline deployment:** packaged **Ollama runtime + runners + model blobs/manifests** to run with **Kaggle Internet OFF**, CPU-only or GPU-backed.
+- **Reproducibility assets:** public Kaggle datasets + notebook, plus a small **synthetic** evaluation set (no competition leakage).
+
+---
+
+## Architecture (high level)
+
+1. **Feature extraction**
+   - Regex detectors (e.g., modular arithmetic, geometry, recurrence hints)
+   - Embeddings from **all-MiniLM-L6-v2** (stored offline as a Kaggle dataset)
+
+2. **Routing (LinUCB)**
+   - Disjoint LinUCB ranks candidate solver arms by estimated reward + exploration bonus
+   - Mild reward shaping encourages verifiable arms
+
+3. **Solver arm execution**
+   - Deterministic modules where possible
+   - Otherwise LLM direct reasoning or LLM→SymPy codegen
+
+4. **Verification / extraction**
+   - Enforce integer output constraints (AIMO expects integer answers in a bounded range)
+   - Verify with symbolic execution when feasible; fallback to alternatives on failure
+
+---
+
+## Reward signal (used for LinUCB)
+
+| Outcome | Reward | Notes |
+|---|---:|---|
+| Verified answer (deterministic module or SymPy-verified) | **1.0** | Highest-confidence signal; encourages selection of verifiable arms |
+| Unverified LLM-direct answer accepted as fallback | **0.5** | Partial credit when verification is not applicable/available |
+| Invalid output / execution error / failed verification / no answer | **0.0** | No learning signal |
+
+This shaping biases routing toward deterministic/SymPy-verifiable arms while still allowing partial credit when direct LLM reasoning produces a usable answer but cannot be symbolically verified.
+
+---
+
+## Offline Ollama packaging notes (CPU/GPU)
+
+Offline inference uses three components together:
+
+- **Ollama runtime:** `ollama` executable and support files
+- **Runners:** CPU/CUDA runner libraries used at serve time
+- **Model store:** `blobs/` + `manifests/` in Ollama’s expected layout
+
+Typical environment variables:
+
+- `OLLAMA_RUNNERS_DIR` — points to packaged runners directory
+- `OLLAMA_MODELS` — points to the local model store (blobs/manifests)
+- `LD_LIBRARY_PATH` — include CUDA/runtime library paths as needed
+
+**Operational note:** Ollama may generate an ephemeral SSH keypair on first run if `/root/.ollama/id_ed25519` is missing; logs may print the public key. No prompts/completions are logged by default in the provided setup.
+
+---
+
+## Model reference (Ollama)
+
+- Tag: `erwan2/DeepSeek-R1-Distill-Qwen-7B:latest`  
+- ID: `f1a7a890c7a1`
+
+---
+
+## Synthetic evaluation dataset (no leakage)
+
+A small dataset (**Test_95_Problems**) is used for regression testing and plumbing validation.
+
+**Provenance:** generated with ChatGPT; **not derived from AIMO** public or private test content.
+
+---
+
+## Links (canonical reproduction)
+
+- **Kaggle write-up:** https://kaggle.com/writeups/ahmedhazemhassan/octomath-contextual-bandit-routing-for-Math
+- **Kaggle submission notebook (public):** https://www.kaggle.com/code/ahmedhazemhassan/octomath
+- **Kaggle dataset — Offline Ollama runtime/models:** https://www.kaggle.com/datasets/ahmedhazemhassan/octomath-ollama-utils
+- **Kaggle dataset — all-MiniLM-L6-v2 embeddings:** https://www.kaggle.com/datasets/ahmedhazemhassan/embedding
+- **Kaggle dataset — Test_95_Problems (synthetic):** https://www.kaggle.com/datasets/ahmedhazemhassan/test-95-problems
+
+---
+
+## License
+
+- Repository code: **MIT** (see `LICENSE`)
+- Packaged datasets/assets include third-party components distributed under their original licenses and notices (see dataset-specific `THIRD_PARTY_NOTICES` / license
