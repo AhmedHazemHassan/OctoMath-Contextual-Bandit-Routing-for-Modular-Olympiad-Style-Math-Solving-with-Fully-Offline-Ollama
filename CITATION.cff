@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the preferred reference below."
+title: "OctoMath: Contextual Bandit Routing for Modular Olympiad-Style Math Solving with Fully Offline Ollama Inference"
+type: software
+authors:
+  - family-names: Hassan
+    given-names: Ahmed Hazem
+    orcid: "https://orcid.org/0009-0000-6000-4351"
+version: "1.0.0"
+date-released: "2026-04-23"
+license: MIT
+url: "https://github.com/AhmedHazemHassan/OctoMath-Contextual-Bandit-Routing-for-Modular-Olympiad-Style-Math-Solving-with-Fully-Offline-Ollama"
+repository-code: "https://github.com/AhmedHazemHassan/OctoMath-Contextual-Bandit-Routing-for-Modular-Olympiad-Style-Math-Solving-with-Fully-Offline-Ollama"
+
+identifiers:
+  - type: url
+    value: "https://kaggle.com/writeups/ahmedhazemhassan/octomath-contextual-bandit-routing-for-Math"
+    description: "Project write-up (Kaggle)"
+  - type: url
+    value: "https://www.kaggle.com/code/ahmedhazemhassan/octomath"
+    description: "Submission notebook (Kaggle)"
+
+preferred-citation:
+  type: report
+  title: "OctoMath: Contextual Bandit Routing for Modular Olympiad-Style Math Solving"
+  authors:
+    - family-names: Hassan
+      given-names: Ahmed Hazem
+      orcid: "https://orcid.org/0009-0000-6000-4351"
+  year: 2026
+  month: 4
+  url: "https://kaggle.com/writeups/ahmedhazemhassan/octomath-contextual-bandit-routing-for-Math"
+  notes: "Kaggle project write-up (design, architecture, and results)."
